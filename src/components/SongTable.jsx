@@ -1,8 +1,9 @@
 import React from "react";
 import { Box, Grid } from "@mui/material";
 import { AccessTimeRounded } from "@mui/icons-material";
+import SongRow from "./SongRow";
 
-export default function SongTable({ songs }) {
+export default function SongTable({ songs, loading }) {
   console.log(songs);
   return (
     <Box
@@ -17,7 +18,7 @@ export default function SongTable({ songs }) {
         container
         px={2}
         py={1}
-        sx={{ fontSize: 14, colo: "text.secondary" }}
+        sx={{ fontSize: 14, color: "text.secondary" }}
       >
         <Grid
           item
@@ -63,6 +64,23 @@ export default function SongTable({ songs }) {
           <AccessTimeRounded sx={{ width: 20, height: 20 }} />
         </Grid>
       </Grid>
+      {loading
+        ? [1, 2, 3, 4, 5, 6, 7, 8].map(() => {
+            return <SongRow loading={true} />;
+          })
+        : songs.map(({ track }, index) => {
+            console.log(track);
+            return (
+              <SongRow
+                title={track.name}
+                artist={track.artists[0].name}
+                image={track.album.images[1].url}
+                position={index + 1}
+                album={track.album.name}
+                seconds={track.duration_ms / 1000}
+              />
+            );
+          })}
     </Box>
   );
 }

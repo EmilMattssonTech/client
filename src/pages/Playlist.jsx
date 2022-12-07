@@ -7,17 +7,25 @@ export default function Playlist({ spotifyApi }) {
   const { id } = useParams();
   const [playlistInfo, setPlaylistInfo] = useState({});
   const [songs, setSongs] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     async function getSongs() {
-      const data = await spotifyApi.getPlaylist(id);
+      setLoading(true);
 
-      console.log(data);
-      setPlaylistInfo({
-        name: data.body.name,
-        image: data.body.images[0].url,
-      });
-      setSongs(data.body.tracks.items);
+      try {
+        const data = await spotifyApi.getPlaylist(id);
+        console.log(data);
+        setPlaylistInfo({
+          name: data.body.name,
+          image: data.body.images[0].url,
+        });
+        setSongs(data.body.tracks.items);
+      } catch (error) {
+        console.error(error);
+      }
+
+      setLoading(false);
     }
     getSongs();
   }, [id, spotifyApi]);
@@ -74,7 +82,7 @@ export default function Playlist({ spotifyApi }) {
           </Typography>
         </Box>
       </Box>
-      <SongTable songs={songs} />
+      <SongTable songs={songs} loading={loading} />
     </Box>
   );
 }
