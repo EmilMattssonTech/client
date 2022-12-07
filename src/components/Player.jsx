@@ -5,8 +5,8 @@ export default function Player() {
   return (
     <Box>
       <Grid container>
-        <Grid item></Grid>
-        <Grid item></Grid>
+        <Grid item>playerplayer1</Grid>
+        <Grid item>playerplayer2</Grid>
       </Grid>
     </Box>
   );
