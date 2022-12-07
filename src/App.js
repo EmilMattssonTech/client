@@ -1,24 +1,35 @@
-import { Box } from "@mui/material";
-import Dashboard from "./components/Dashboard";
-import Login from "./pages/Login";
 import { useEffect, useState } from "react";
+import Login from "./pages/Login";
+import { Box } from "@mui/material";
+import { Routes, Route } from "react-router-dom";
 import { getAccessToken } from "./utils/getAccessToken";
 import { getAccessTokenFromStorage } from "./utils/getAccessTokenFromStorage";
+import Dashboard from "./components/Dashboard";
 
 function App({ spotifyApi }) {
-  const [token, setToken] = useState(null);
+  const [token, setToken] = useState(getAccessTokenFromStorage);
 
   useEffect(() => {
     let accessToken = getAccessTokenFromStorage() || getAccessToken();
 
     if (accessToken) {
       setToken(accessToken);
-      window.sessionStorage.setItem("spotifyToken", accessToken);
+      sessionStorage.setItem("spotifyToken", accessToken);
       window.location.hash = "";
     }
   }, []);
 
-  return <Box className="App">{token ? <Dashboard /> : <Login />}</Box>;
+  return (
+    <Box className="App">
+      {token ? (
+        <Dashboard spotifyApi={spotifyApi} />
+      ) : (
+        <Routes>
+          <Route path="*" element={<Login />} />
+        </Routes>
+      )}
+    </Box>
+  );
 }
 
 export default App;
