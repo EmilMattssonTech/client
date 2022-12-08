@@ -74,7 +74,7 @@ export default function SongTable({ songs, loading }) {
               <SongRow
                 title={track.name}
                 artist={track.artists[0].name}
-                image={track.album.images[1].url}
+                image={track.album.images[0].url}
                 position={index + 1}
                 album={track.album.name}
                 seconds={track.duration_ms / 1000}

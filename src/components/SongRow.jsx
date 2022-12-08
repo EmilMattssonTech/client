@@ -1,16 +1,37 @@
 import React from "react";
 import { Grid, Box, Typography, Avatar, Skeleton } from "@mui/material";
 import { formatTime } from "../utils/formatTime";
+import { playSongFromList } from "../store/playerSlice";
+import { useDispatch } from "react-redux";
 
 export default function SongRow({
   title,
-  artist,
   image,
+  spotifyApi,
+  contextUri,
+  artist,
   position,
   album,
   seconds,
+  duration,
   loading,
 }) {
+  const dispatch = useDispatch();
+
+  const onRowClick = () => {
+    const song = {
+      context_uri: contextUri,
+      offset: { position },
+      position_ms: 0,
+      title,
+      image: image ? image : {},
+      artist,
+      duration,
+      position,
+    };
+    dispatch(playSongFromList({ spotifyApi, song }));
+  };
+
   return (
     <Grid
       container
@@ -23,8 +44,12 @@ export default function SongRow({
         cursor: "pointer",
         "&:hover": { bgcolor: "#f0790030" },
       }}
+      onClick={onRowClick}
     >
-      <Grid item sx={{ width: 35, display: "flex", alignItems: "center" }}>
+      <Grid
+        item
+        sx={{ width: 35, display: "flex", alignItems: "center", fontSize: 16 }}
+      >
         {loading ? (
           <Skeleton variant="text" width={14} height={24} />
         ) : (

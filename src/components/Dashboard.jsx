@@ -51,7 +51,7 @@ export default function Dashboard({ spotifyApi }) {
           />
         </Routes>
       </Box>
-      <Player />
+      <Player spotifyApi={spotifyApi} />
     </Box>
   );
 }

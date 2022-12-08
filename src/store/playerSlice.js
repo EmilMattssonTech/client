@@ -61,3 +61,5 @@ export const playSongFromList = createAsyncThunk(
     }
   }
 );
+
+export default playerSlice.reducer;
