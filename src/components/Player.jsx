@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
-import { Box, Grid, Typography, Avatar } from "@mui/material";
+import { Grid, Box, Avatar, Typography } from "@mui/material";
+import React, { useEffect, useState } from "react";
 import { getAccessTokenFromStorage } from "../utils/getAccessTokenFromStorage";
+import PlayerControlls from "./PlayerControlls";
+import PlayerVolume from "./PlayerVolume";
 
 const Player = ({ spotifyApi }) => {
   const track = {
@@ -12,11 +14,15 @@ const Player = ({ spotifyApi }) => {
   };
 
   const [localPlayer, setPlayer] = useState(null);
-  const [is_Paused, setPaused] = useState(false);
-  const [current_Track, setTrack] = useState(track);
+  const [is_paused, setPaused] = useState(false);
+  const [current_track, setTrack] = useState(track);
   const [device, setDevice] = useState(null);
   const [duration, setDuration] = useState(null);
   const [progress, setProgress] = useState(null);
+
+  /* ----- set script and get instance ----- */
+
+  console.log(current_track);
 
   useEffect(() => {
     const token = getAccessTokenFromStorage();
@@ -35,10 +41,11 @@ const Player = ({ spotifyApi }) => {
         volume: 0.5,
       });
 
+      setPlayer(player);
+
       player.addListener("ready", ({ device_id }) => {
         console.log("Ready with Device ID");
         setDevice(device_id);
-        setPlayer(player);
       });
 
       player.addListener("player_state_changed", (state) => {
@@ -53,10 +60,11 @@ const Player = ({ spotifyApi }) => {
         setPaused(state.paused);
       });
 
-      setPlayer(player);
       player.connect();
     };
   }, []);
+
+  /* ----- Connect and disconnect player ----- */
 
   useEffect(() => {
     if (!localPlayer) return;
@@ -67,17 +75,21 @@ const Player = ({ spotifyApi }) => {
     };
   }, [localPlayer]);
 
+  /* ----- Transfer Playback ----- */
+
   useEffect(() => {
+    console.log("hej hej");
     const transferMyPlayback = async () => {
       if (device) {
         await spotifyApi.transferMyPlayback([device], true);
       }
     };
+
     const getDeviceFromApi = async () => {
       await spotifyApi.getMyDevices();
     };
-    getDeviceFromApi();
     transferMyPlayback();
+    getDeviceFromApi();
   }, [device, spotifyApi]);
 
   return (
@@ -104,19 +116,17 @@ const Player = ({ spotifyApi }) => {
           }}
         >
           <Avatar
-            src={
-              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRYRbVygZrmKYrNyzTKfcv1UcsKBBvKbQWvIA&usqp=CAU"
-            }
+            src={current_track.album.images[0].url}
             alt={"#"}
             variant="square"
             sx={{ width: 56, height: 56, marginRight: 2 }}
           />
           <Box>
             <Typography sx={{ color: "text.primary", fontSize: 14 }}>
-              Baby
+              {current_track.name}
             </Typography>
             <Typography sx={{ color: "text.secondary", fontSize: 12 }}>
-              Justin Bieber
+              {current_track.artists[0].name}
             </Typography>
           </Box>
         </Grid>
@@ -129,8 +139,9 @@ const Player = ({ spotifyApi }) => {
             alignItems: "center",
           }}
         >
-          Player controller
+          <PlayerControlls />
         </Grid>
+        <PlayerVolume />
       </Grid>
     </Box>
   );
